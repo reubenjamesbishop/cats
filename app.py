@@ -9,10 +9,6 @@ import time
 #loading the cat classifier model
 cat_clf=joblib.load("Cat_Clf_model.pkl")
 
-#Loading Cat moew sound
-audio_file = open('Cat-meow.mp3', 'rb')
-audio_bytes = audio_file.read()
-
 #functions to predict image
 def sigmoid(z):
     
@@ -33,19 +29,18 @@ def predict(w, b, X):
     return Y_prediction
 
 # Designing the interface
-st.title("Cat Image Classification App")
+st.title("Is it a Bird?")
+st.write("Upload a picture to find out...")
 # For newline
 st.write('\n')
 
-image = Image.open('images/image.png')
+image = Image.open('images/bird.png')
 show = st.image(image, use_column_width=True)
-
-st.sidebar.title("Upload Image")
 
 #Disabling warning
 st.set_option('deprecation.showfileUploaderEncoding', False)
 #Choose your own image
-uploaded_file = st.sidebar.file_uploader(" ",type=['png', 'jpg', 'jpeg'] )
+uploaded_file = st.file_uploader(" ",type=['png', 'jpg', 'jpeg'] )
 
 if uploaded_file is not None:
     
@@ -55,15 +50,12 @@ if uploaded_file is not None:
     image = np.asarray(u_img)/255
     
     my_image= resize(image, (64,64)).reshape((1, 64*64*3)).T
-
-# For newline
-st.sidebar.write('\n')
     
-if st.sidebar.button("Click Here to Classify"):
+if st.button("Click Here to Classify"):
     
     if uploaded_file is None:
         
-        st.sidebar.write("Please upload an Image to Classify")
+        st.write("Please upload an Image to Classify")
     
     else:
         
@@ -72,8 +64,6 @@ if st.sidebar.button("Click Here to Classify"):
             prediction = predict(cat_clf["w"], cat_clf["b"], my_image)
             time.sleep(2)
             st.success('Done!')
-            
-        st.sidebar.header("Algorithm Predicts: ")
         
         #Formatted probability value to 3 decimal places
         probability = "{:.3f}".format(float(prediction*100))
@@ -82,16 +72,14 @@ if st.sidebar.button("Click Here to Classify"):
         
         if prediction > 0.5:
             
-            st.sidebar.write("It's a 'Cat' picture.", '\n' )
+            st.header("It's a BIRD!" )
             
-            st.sidebar.write('**Probability: **',probability,'%')
-            
-            st.sidebar.audio(audio_bytes)
+            st.write('**Probability: **',probability,'%')
                              
         else:
-            st.sidebar.write(" It's a 'Non-Cat' picture ",'\n')
+            st.header("It's not a bird...")
             
-            st.sidebar.write('**Probability: **',probability,'%')
+            st.write('**Probability: **',probability,'%')
     
     
     
